@@ -178,17 +178,17 @@ class Carte(object):
             if perso["x"] < self.x_size - 1:
                 if self.map_array[perso["y"]][perso["x"] + 1] != "M":
                     perso["x"] += 1
-                    self.check_treasure(perso)
+                    self.check_take_treasure(perso)
         elif direction == "S":
             if perso["y"] < self.y_size - 1:
                 if self.map_array[perso["y"] + 1][perso["x"]] != "M":
                     perso["y"] += 1
-                    self.check_treasure(perso)
+                    self.check_take_treasure(perso)
         elif direction == "O":
             if perso["x"] != 0:
                 if self.map_array[perso["y"]][perso["x"] - 1] != "M":
                     perso["x"] -= 1
-                    self.check_treasure(perso)
+                    self.check_take_treasure(perso)
 
     def turn_right(self, perso):
         """
