@@ -1,2 +1,6 @@
 # cat
-neko.py <path_file>
+# Instructions
+
+## Run the project
+
+python neko.py <path_file>
