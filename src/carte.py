@@ -2,13 +2,48 @@ import os
 
 class Carte(object):
     """
+    class to represent a carte (map in french).
+
+    ...
+
+    Attributes
+    ----------
+    map (list): map informations
+
+    Methods
+    -------
+    get_adv_info():
+        add in the dictionnary "adventurers" all information about adventurers
+    check_position(x, y, name):
+        checks that the adventurer does not start his adventure on a mountain
+    draw_map():
+        draw a map with mountains and treasures
+    create_map():
+        create an array for the map
+    add_mountain():
+        add mountains in the map_array
+    add_treasure():
+        add treasures in the map_array
+    execute_orders():
+        execute the different actions
+    check_take_treasure(perso):
+        check if the adventurer can take a treasure and take the treasure
+    move_on(perso):
+        move forward one space
+    turn_right(perso):
+        turn the adventurer to the right
+    turn_left(perso):
+        turn the adventurer to the left
+    create_answer():
+        create the file with the final result
     """
 
     def __init__(self, map):
-        """_summary_
+        """
+        init function for the class Carte
 
         Args:
-            map (_type_): _description_
+            map (list): map informations
         """
         self.compass = ['N', 'E', 'S', 'O']
         self.map = map
@@ -20,7 +55,8 @@ class Carte(object):
         self.get_adv_info()
 
     def get_adv_info(self):
-        """_summary_
+        """
+        add in the dictionnary "adventurers" all information about adventurers
         """
         for elem in self.map:
             if elem[0] == "A":
@@ -33,12 +69,13 @@ class Carte(object):
                 self.adventurers[name] = {"x": x, "y": y, "direction": direction, "move": move, "treasures": 0}
 
     def check_position(self, x, y, name):
-        """_summary_
+        """
+        checks that the adventurer does not start his adventure on a mountain
 
         Args:
-            x (_type_): _description_
-            y (_type_): _description_
-            name (_type_): _description_
+            x (int): position x
+            y (int): position y
+            name (str): adventure's name
 
         Raises:
             Exception: _description_
@@ -47,14 +84,16 @@ class Carte(object):
             raise Exception(f"the adventurer {name} is on a mountain. choose an other start position.")
 
     def draw_map(self):
-        """_summary_
+        """
+        draw a map with mountains and treasures
         """
         self.create_map()
         self.add_mountain()
         self.add_treasure()
     
     def create_map(self):
-        """_summary_
+        """
+        create an array for the map
         """
         for elem in self.map:
             if elem[0] == "C":
@@ -65,7 +104,8 @@ class Carte(object):
 
     
     def add_mountain(self):
-        """_summary_
+        """
+        add mountains in the map_array
         """
         for elem in self.map:
             if elem[0] == "M":
@@ -75,7 +115,8 @@ class Carte(object):
 
     
     def add_treasure(self):
-        """_summary_
+        """
+        add treasures in the map_array
         """
         for elem in self.map:
             if elem[0] == "T":
@@ -85,10 +126,11 @@ class Carte(object):
                 self.map_array[y][x] = nb_t
     
     def execute_orders(self):
-        """_summary_
+        """
+        execute the different actions
 
         Raises:
-            Exception: _description_
+            Exception: if the action does not exist
         """
         for charac in self.adventurers:
             perso = self.adventurers[charac]
@@ -102,11 +144,12 @@ class Carte(object):
                 else:
                     raise Exception(f"the order {order} does not exist")
 
-    def check_treasure(self, perso):
-        """_summary_
+    def check_take_treasure(self, perso):
+        """
+        check if the adventurer can take a treasure and take the treasure
 
         Args:
-            perso (_type_): _description_
+            perso (dict): contains information from adventurer
         """
         place = self.map_array[perso["y"]][perso["x"]]
         if type(place) is int and place != 0:
@@ -114,6 +157,15 @@ class Carte(object):
             perso["treasures"] += 1
 
     def move_on(self, perso):
+        """
+        move forward one space
+
+        Args:
+            perso (dict): contains information from adventurer
+
+        Raises:
+            Exception: if the direction does not exist
+        """
         direction = perso["direction"]
         if direction not in self.compass:
             raise Exception(f"the direction {direction} does not exist")
@@ -121,7 +173,7 @@ class Carte(object):
             if perso["y"] != 0:
                 if self.map_array[perso["y"] - 1][perso["x"]] != "M":
                     perso["y"] -= 1
-                    self.check_treasure(perso)
+                    self.check_take_treasure(perso)
         elif direction == "E":
             if perso["x"] < self.x_size - 1:
                 if self.map_array[perso["y"]][perso["x"] + 1] != "M":
@@ -139,25 +191,28 @@ class Carte(object):
                     self.check_treasure(perso)
 
     def turn_right(self, perso):
-        """_summary_
+        """
+        turn the adventurer to the right
 
         Args:
-            perso (_type_): _description_
+            perso (dict): contains information from adventurer
         """
         index = self.compass.index(perso["direction"])
         perso["direction"] = self.compass[index + 1] if index < len(self.compass) - 1 else self.compass[0]
 
     def turn_left(self, perso):
-        """_summary_
+        """
+        turn the adventurer to the left
 
         Args:
-            perso (_type_): _description_
+            perso (dict): contains information from adventurer
         """
         index = self.compass.index(perso["direction"])
         perso["direction"] = self.compass[index - 1]
     
     def create_answer(self):
-        """_summary_
+        """
+        create the file with the final result
         """
         answer = ""
         ln_map = len(self.map)

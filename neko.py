@@ -1,7 +1,7 @@
 import os
 import sys
 
-from carte import Carte
+from src.carte import Carte
 
 def get_map(file_path):
     """
