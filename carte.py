@@ -1,10 +1,15 @@
-
-from unicodedata import name
-
+import os
 
 class Carte(object):
+    """
+    """
 
     def __init__(self, map):
+        """_summary_
+
+        Args:
+            map (_type_): _description_
+        """
         self.compass = ['N', 'E', 'S', 'O']
         self.map = map
         self.x_size = 0
@@ -15,25 +20,42 @@ class Carte(object):
         self.get_adv_info()
 
     def get_adv_info(self):
+        """_summary_
+        """
         for elem in self.map:
             if elem[0] == "A":
                 name = elem[1]
                 x = int(elem[2])
                 y = int(elem[3])
-                self.check_position()
+                self.check_position(x, y, name)
                 direction = elem[4]
                 move = elem[5]
                 self.adventurers[name] = {"x": x, "y": y, "direction": direction, "move": move, "treasures": 0}
 
-    def check_position(self):
-        pass
+    def check_position(self, x, y, name):
+        """_summary_
+
+        Args:
+            x (_type_): _description_
+            y (_type_): _description_
+            name (_type_): _description_
+
+        Raises:
+            Exception: _description_
+        """
+        if self.map_array[y][x] == "M":
+            raise Exception(f"the adventurer {name} is on a mountain. choose an other start position.")
 
     def draw_map(self):
+        """_summary_
+        """
         self.create_map()
         self.add_mountain()
         self.add_treasure()
     
     def create_map(self):
+        """_summary_
+        """
         for elem in self.map:
             if elem[0] == "C":
                 self.x_size = int(elem[1])
@@ -43,6 +65,8 @@ class Carte(object):
 
     
     def add_mountain(self):
+        """_summary_
+        """
         for elem in self.map:
             if elem[0] == "M":
                 x = int(elem[1])
@@ -51,6 +75,8 @@ class Carte(object):
 
     
     def add_treasure(self):
+        """_summary_
+        """
         for elem in self.map:
             if elem[0] == "T":
                 x = int(elem[1])
@@ -59,10 +85,14 @@ class Carte(object):
                 self.map_array[y][x] = nb_t
     
     def execute_orders(self):
+        """_summary_
+
+        Raises:
+            Exception: _description_
+        """
         for charac in self.adventurers:
             perso = self.adventurers[charac]
             for order in perso["move"]:
-                print(order)
                 if order == "A":
                     self.move_on(perso)
                 elif order == "D":
@@ -71,10 +101,13 @@ class Carte(object):
                     self.turn_left(perso)
                 else:
                     raise Exception(f"the order {order} does not exist")
-                print(perso)
-                print(self.adventurers)
 
     def check_treasure(self, perso):
+        """_summary_
+
+        Args:
+            perso (_type_): _description_
+        """
         place = self.map_array[perso["y"]][perso["x"]]
         if type(place) is int and place != 0:
             self.map_array[perso["y"]][perso["x"]] -= 1
@@ -106,9 +139,43 @@ class Carte(object):
                     self.check_treasure(perso)
 
     def turn_right(self, perso):
+        """_summary_
+
+        Args:
+            perso (_type_): _description_
+        """
         index = self.compass.index(perso["direction"])
         perso["direction"] = self.compass[index + 1] if index < len(self.compass) - 1 else self.compass[0]
 
     def turn_left(self, perso):
+        """_summary_
+
+        Args:
+            perso (_type_): _description_
+        """
         index = self.compass.index(perso["direction"])
         perso["direction"] = self.compass[index - 1]
+    
+    def create_answer(self):
+        """_summary_
+        """
+        answer = ""
+        ln_map = len(self.map)
+        for idx, elem in enumerate(self.map):
+            if elem[0] == "T":
+                elem[3] = str(self.map_array[int(elem[2])][int(elem[1])])
+            elif elem[0] == "A":
+                charac = self.adventurers[elem[1]]
+                elem[2] = str(charac["x"])
+                elem[3] = str(charac["y"])
+                elem[4] = charac["direction"]
+                elem[5] = str(charac["treasures"])
+            if elem[0] != "#":
+                answer += " - ".join(elem)
+                if idx < ln_map - 1:
+                    answer += "\n"
+        file = "answer.txt"
+        if os.path.exists(file):
+            os.remove(file)
+        with open(file, "w") as f:
+            f.write(answer)
